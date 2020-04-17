@@ -1,0 +1,11 @@
+[import](common.lg)
+
+# bfdprompt-268663()
+- What would you like to check on Twitter?
+
+# bfdactivity-711737()
+ - Tweet # ${dialog.foreach.index + 1}: ${dialog.foreach.value.text} by ${dialog.foreach.value.user.screen_name}
+
+# bfdprompt-062477()
+- How many Tweets shall I get you?
+

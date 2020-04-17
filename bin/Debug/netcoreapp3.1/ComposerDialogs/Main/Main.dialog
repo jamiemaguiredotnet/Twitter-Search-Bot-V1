@@ -1,0 +1,102 @@
+{
+  "$type": "Microsoft.AdaptiveDialog",
+  "$designer": {
+    "id": "433224",
+    "name": "Twitter-Search-Bot-V1"
+  },
+  "autoEndDialog": true,
+  "defaultResultProperty": "dialog.result",
+  "triggers": [
+    {
+      "$type": "Microsoft.OnUnknownIntent",
+      "$designer": {
+        "id": "821845"
+      },
+      "actions": [
+        {
+          "$type": "Microsoft.TextInput",
+          "$designer": {
+            "id": "268663",
+            "name": "Text input"
+          },
+          "prompt": "${bfdprompt-268663()}",
+          "maxTurnCount": "3",
+          "allowInterruptions": "false",
+          "property": "dialog.term"
+        },
+        {
+          "$type": "Microsoft.NumberInput",
+          "$designer": {
+            "id": "062477",
+            "name": "Number input"
+          },
+          "prompt": "${bfdprompt-062477()}",
+          "maxTurnCount": "3",
+          "property": "dialog.count",
+          "allowInterruptions": "false",
+          "defaultLocale": "en-us"
+        },
+        {
+          "$type": "Microsoft.HttpRequest",
+          "$designer": {
+            "id": "976034",
+            "name": "Send an HTTP request"
+          },
+          "method": "GET",
+          "url": "https://api.twitter.com/1.1/search/tweets.json?q=${dialog.term}&count=${dialog.count}&lang=en",
+          "resultProperty": "dialog.api_response",
+          "headers": {
+            "Authorization": "bearer AAAAAAAAAAAAAAAAAAAAABx%2F%2BwAAAAAA29%2FsAnmEfLX0q55pJGlgOKkQ6Fk%3Dby6slmIYO5ZhMF7cZgKzdG6KBzMhtxhPrXtbVjQAETLMpIyJMN"
+          },
+          "responseType": "Json"
+        },
+        {
+          "$type": "Microsoft.Foreach",
+          "$designer": {
+            "id": "664524",
+            "name": "Loop: for each item"
+          },
+          "itemsProperty": "dialog.api_response.content.statuses",
+          "actions": [
+            {
+              "$type": "Microsoft.SendActivity",
+              "$designer": {
+                "id": "711737",
+                "name": "Send a response"
+              },
+              "activity": "${bfdactivity-711737()}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "$type": "Microsoft.OnConversationUpdateActivity",
+      "$designer": {
+        "id": "376720"
+      },
+      "actions": [
+        {
+          "$type": "Microsoft.Foreach",
+          "$designer": {
+            "id": "518944",
+            "name": "Loop: for each item"
+          },
+          "itemsProperty": "turn.Activity.membersAdded",
+          "actions": [
+            {
+              "$type": "Microsoft.IfCondition",
+              "$designer": {
+                "id": "641773",
+                "name": "Branch: if/else"
+              },
+              "condition": "string(dialog.foreach.value.id) != string(turn.Activity.Recipient.id)"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "generator": "Main.lg",
+  "$schema": "https://raw.githubusercontent.com/microsoft/BotFramework-Composer/stable/Composer/packages/server/schemas/sdk.schema"
+}
